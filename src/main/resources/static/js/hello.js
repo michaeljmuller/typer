@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $.ajax({
-        url: "http://localhost:8080/s/text/1/10"
+        url: "http://localhost:8080/s/resume"
     }).then(function(data) {
         $('#remainder').text(data.lines[0]);
         for (var i = 1; i < data.lines.length; i++) {
@@ -8,7 +8,7 @@ $(document).ready(function() {
         }
         localStorage.setItem('goalText', data.lines[0]);
         localStorage.setItem('numLines', data.lines.length);
-        localStorage.setItem('atLine', 1);
+        localStorage.setItem('atLine', data.pos);
         $('#input').focus();
     });
     

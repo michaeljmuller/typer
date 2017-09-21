@@ -39,19 +39,36 @@ public class Service {
 
     private static final Set<Character> OKAY_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`1234567890-=~!@#$%^&*()_+[]\\;':\",./<>? \n".chars().mapToObj(i->Character.valueOf((char)i)).collect(Collectors.toSet());
     
+    private static final int NUM_LINES = 10;
+    
+    private static final int WRAP_COL = 80;
+    
     private static List<String> text = null;
     
     @RequestMapping("/s/text/{start}/{numLines}")
-    TextData text(@PathVariable("start") int start, @PathVariable("numLines") long numLines) {
+    TextData text(@PathVariable("start") int start, @PathVariable("numLines") int numLines) {
         start = start-1; // caller is 1-based, convert to 0-based
-        List<String> lines = getLines();
         TextData td = new TextData();
+        populateText(td, start, numLines);
+        return td;
+    }
+    
+    @RequestMapping("/s/resume")
+    ResumeData resume() {
+        ResumeData rd = new ResumeData();
+        int resumeAtLine = 1;
+        rd.setPos(resumeAtLine);
+        populateText(rd, resumeAtLine, NUM_LINES);
+        return rd;
+    }
+    
+    protected void populateText(TextData td, int start, int numLines) {
+        List<String> lines = getLines();
         List<String> response = new LinkedList<>();
         for (int i = start; i < start+numLines; i++) {
             response.add(lines.get(i));
         }
         td.setLines(response);
-        return td;
     }
 
     protected List<String> getLines() {
@@ -60,9 +77,8 @@ public class Service {
                 // convert a book to plain text
                 String epubText = epubToPlainText(findResourceFile("p-g-wodehouse_right-ho-jeeves.epub"));
                 
-                // wrap the text at 80 characters 
-                epubText = wrapMultiLine(epubText,80);
-                System.out.println(epubText);
+                // wrap the text  
+                epubText = wrapMultiLine(epubText, WRAP_COL);
 
                 // convert to an array of strings
                 text = Arrays.asList(epubText.split("\n"));
