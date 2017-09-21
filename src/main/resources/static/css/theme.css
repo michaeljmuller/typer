@@ -1,0 +1,25 @@
+.lines {
+    height: 20px;
+}
+
+#match {
+    color: #aaffaa;
+}
+
+#bad {
+    background-color:red;
+}
+
+.first {
+    font-weight: bold;
+}
+
+.lines, #input {
+    font-family: Verdana;
+    font-size: 12pt;
+    width: 100%;
+}
+
+#spacer {
+    height: 10px;
+}
