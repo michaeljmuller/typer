@@ -19,6 +19,6 @@ public class App
     
     public static void main( String[] args )
     {
-        SpringApplication.run(new Object[]{App.class, Service.class}, args);
+        SpringApplication.run(new Object[]{App.class, Service.class, JdbcDao.class, TextPreparationService.class}, args);
     }
 }
