@@ -121,13 +121,13 @@ function nextLine() {
     $('#input').val("");
     
     // increment (and save) the line of text that the user is typing
-    var atLine = Number(localStorage.getItem('atLine'));
-    atLine += linesToSkip;
-    localStorage.setItem('atLine', atLine);
+    var wasAtLine = Number(localStorage.getItem('atLine'));
+    var nowAtLine = wasAtLine + linesToSkip;
+    localStorage.setItem('atLine', nowAtLine);
     
     // request text to fill in the blank space at the bottom
     $.ajax({
-        url: "http://localhost:8080/s/text/" + (atLine+(numLines-linesToSkip)) + "/" + linesToSkip
+        url: "http://localhost:8080/s/text/" + (nowAtLine+(numLines-linesToSkip)) + "/" + linesToSkip 
     }).then(function(data) {
 	    
 	    // fill in the last line(s)

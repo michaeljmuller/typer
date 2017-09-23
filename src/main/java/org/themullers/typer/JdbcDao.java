@@ -11,12 +11,18 @@ public class JdbcDao {
 
     private JdbcTemplate template;
     
+    private final static int TEXT_ID = 1;
+    
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
     
     public void updatePosition(int pos) {
-        template.update("insert into progress (text_id, line) values (?, ?) ON CONFLICT (text_id) DO UPDATE set line = excluded.line", 1, pos);
+        template.update("insert into progress (text_id, line) values (?, ?) ON CONFLICT (text_id) DO UPDATE set line = excluded.line", TEXT_ID, pos);
+    }
+    
+    public int getPosition() {
+        return template.queryForObject("select line from progress where text_id=?", Integer.class, TEXT_ID);
     }
 }

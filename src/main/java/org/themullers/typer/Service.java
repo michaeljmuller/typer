@@ -21,10 +21,16 @@ public class Service {
     private static List<String> lines = null;
     
     private TextPreparationService textPrepSvc;
+    private JdbcDao dao;
     
     @Autowired
     public void setTextPreparationService(TextPreparationService svc) {
         this.textPrepSvc = svc;
+    }
+    
+    @Autowired
+    public void setDAO(JdbcDao dao) {
+        this.dao = dao;
     }
     
     @PostConstruct
@@ -43,7 +49,7 @@ public class Service {
     @RequestMapping("/s/resume")
     ResumeData resume() {
         ResumeData rd = new ResumeData();
-        int resumeAtLine = 0;
+        int resumeAtLine = dao.getPosition();
         rd.setPos(resumeAtLine);
         populateText(rd, resumeAtLine, NUM_LINES);
         return rd;
@@ -51,7 +57,7 @@ public class Service {
     
     @RequestMapping("/s/lineComplete")
     LineCompleteResponse lineComplete(@RequestParam(value="lineNum") int lineNum) {
-        
+        dao.updatePosition(lineNum);
         return new LineCompleteResponse();
     }
     
