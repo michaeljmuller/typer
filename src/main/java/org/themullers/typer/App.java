@@ -14,7 +14,7 @@ public class App
     @GetMapping("/")
     String home(Model model) {
         model.addAttribute("numLines", 10);
-        return "hello";
+        return "typer"; // the name of the template to use
     }
     
     public static void main( String[] args )

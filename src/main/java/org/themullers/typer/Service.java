@@ -35,7 +35,6 @@ public class Service {
     
     @RequestMapping("/s/text/{start}/{numLines}")
     TextData text(@PathVariable("start") int start, @PathVariable("numLines") int numLines) {
-        start = start-1; // caller is 1-based, convert to 0-based
         TextData td = new TextData();
         populateText(td, start, numLines);
         return td;
@@ -44,7 +43,7 @@ public class Service {
     @RequestMapping("/s/resume")
     ResumeData resume() {
         ResumeData rd = new ResumeData();
-        int resumeAtLine = 1;
+        int resumeAtLine = 0;
         rd.setPos(resumeAtLine);
         populateText(rd, resumeAtLine, NUM_LINES);
         return rd;
