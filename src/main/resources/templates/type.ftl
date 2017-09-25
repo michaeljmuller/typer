@@ -3,6 +3,8 @@
   <title>Typer</title>
   <script src="js/jquery-3.2.1.min.js"></script>
   <script src="js/typer.js"></script>
+  <script src="js/raphael-2.1.4.min.js"></script>
+  <script src="js/justgage.js"></script>
   <link rel="stylesheet" type="text/css" href="css/theme.css"></link>
   <meta name="_csrf" content="${_csrf.token}"/>
   <meta name="_csrf_header" content="${_csrf.headerName}"/></head>
@@ -16,6 +18,6 @@
 <div id="spacer">&nbsp;</div>
 <input id="input" autocomplete="off"></input>
 </div>
-<div id="stats">&nbsp;</div>
+<div id="graph"></div>
 </body>
 </html>

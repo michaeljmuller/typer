@@ -1,3 +1,5 @@
+var g;
+
 // entry point when the page has loaded
 $(document).ready(function() {
 	
@@ -49,6 +51,24 @@ $(document).ready(function() {
 		}
 	});
 	
+    g = new JustGage({
+	    id: "graph",
+	    value: 0,
+	    min: 0,
+	    max: 100,
+	    title: "WPM"
+	  });
+  
+	
+	/*
+	// draw something in the graph
+	var TESTER = $('#graph').get(0);
+	console.log(TESTER);
+	Plotly.plot( TESTER, [{
+	x: [1, 2, 3, 4, 5],
+	y: [1, 2, 4, 8, 16] }], {
+	margin: { t: 0 } } );
+*/
 });
 
 // called for each letter the user enters
@@ -94,7 +114,7 @@ function handleKeyPress(keyPressed) {
 	var additionalTime = Math.min(now - Number(localStorage.getItem('lastKeypressTime')), 1500);
 	
 	// reset the time of the last keypress to now
-    localStorage.setItem('lastKeypressTime', Date.now());
+    localStorage.setItem('lastKeypressTime', now);
 	
 	// calculate how much time the user has spent typing this line of text
 	var timeTyping = Number(localStorage.getItem('timeTyping')) + additionalTime;
@@ -105,8 +125,7 @@ function handleKeyPress(keyPressed) {
 	var elapsedTimeInMinutes = (timeTyping / 1000.0) / 60.0;
 	var wpm = numWords / elapsedTimeInMinutes;
 	
-	// write the stats to the page
-	$("#stats").text("key pressed = " + keyPressed + "words = " + numWords + ", minutes = " + elapsedTimeInMinutes + ", wpm = " + wpm);
+	g.refresh(wpm);
 	
     // if the user hit return and typed the current line correctly 
     if (keyPressed == 13 && typed.trim() == goal.trim()) {
