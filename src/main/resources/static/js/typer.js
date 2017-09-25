@@ -30,13 +30,23 @@ $(document).ready(function() {
         // store the index of the line of text currently being typed
         localStorage.setItem('atLine', data.pos);
         
+        // when was the last keypress?  (start the timer)
+        localStorage.setItem('lastKeypressTime', Date.now());
+        
+        // how much time has the user spent typing this line?  (no time, yet)
+        localStorage.setItem('timeTyping', 0);
+        
         // put the focus into the text box where you're supposed to type
         $('#input').focus();
     });
 
 	// register handler for when someone types
 	$("#input").keyup(function(event) {
-		handleKeyPress(event.which)
+		
+		// programmatically setting focus seems to generate a keyup event for ascii 16. idk why, so let's just ignore it.
+		if (event.which != 16) {
+			handleKeyPress(event.which);
+		}
 	});
 	
 });
@@ -78,6 +88,26 @@ function handleKeyPress(keyPressed) {
     $("#bad").text(badText);
     $("#remainder").text(remainder);
 
+	// how much time elapsed since the last time the user pressed a key?
+	// ignore any time beyond 1.5 seconds; the user probably just stopped typing
+	var now = Date.now();
+	var additionalTime = Math.min(now - Number(localStorage.getItem('lastKeypressTime')), 1500);
+	
+	// reset the time of the last keypress to now
+    localStorage.setItem('lastKeypressTime', Date.now());
+	
+	// calculate how much time the user has spent typing this line of text
+	var timeTyping = Number(localStorage.getItem('timeTyping')) + additionalTime;
+	localStorage.setItem('timeTyping', timeTyping);
+	
+	// calculate WPM so far for this line of text
+	var numWords = matchText.length / 5.0;
+	var elapsedTimeInMinutes = (timeTyping / 1000.0) / 60.0;
+	var wpm = numWords / elapsedTimeInMinutes;
+	
+	// write the stats to the page
+	$("#stats").text("key pressed = " + keyPressed + "words = " + numWords + ", minutes = " + elapsedTimeInMinutes + ", wpm = " + wpm);
+	
     // if the user hit return and typed the current line correctly 
     if (keyPressed == 13 && typed.trim() == goal.trim()) {
         nextLine();
@@ -125,14 +155,41 @@ function nextLine() {
     var nowAtLine = wasAtLine + linesToSkip;
     localStorage.setItem('atLine', nowAtLine);
     
-    // request text to fill in the blank space at the bottom
+    // reset the amount of time spent typing
+    var timeTyping = localStorage.getItem('timeTyping');
+    localStorage.setItem('timeTyping', 0.0);
+    
+    // determine which line of text we need the server to provide for us to fill in on the bottom
+    var requestLineNumStart = nowAtLine+ (numLines - linesToSkip);
+
+    // get csrf tokens we wrote to the page so we can safely post back 
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
     $.ajax({
-        url: "http://localhost:8080/s/text/" + (nowAtLine+(numLines-linesToSkip)) + "/" + linesToSkip 
-    }).then(function(data) {
+    	method: "POST", 
+    	url: "http://localhost:8080/s/lineComplete", 
+    	beforeSend: function(xhr) {
+    		xhr.setRequestHeader(header, token);
+    	},
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    data: JSON.stringify({
+    	    wasAtLine: wasAtLine,
+    	    nowAtLine: nowAtLine, 
+    	    elapsedTime: timeTyping, 
+    	    requestedLineNumStart: requestLineNumStart, 
+    	    numLinesRequested: linesToSkip    	
+    	}), 
+    	datatype: 'json'
+    }).then(function(response) {
 	    
 	    // fill in the last line(s)
 	    for (var i = 0; i < linesToSkip; i++) {
-		    $('#line'+((numLines-linesToSkip)+i)).text(data.lines[i]);
+		    $('#line'+((numLines-linesToSkip)+i)).text(response.lines[i]);
 	    }
     });
+
 }

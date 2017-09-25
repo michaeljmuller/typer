@@ -1,5 +1,5 @@
 package org.themullers.typer;
 
-public class LineCompleteResponse {
+public class LineCompleteResponse extends TextData {
 
 }

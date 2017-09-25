@@ -1,3 +1,7 @@
+body {
+    font-family: Verdana;
+}
+
 .lines {
     height: 20px;
 }
@@ -15,11 +19,33 @@
 }
 
 .lines, #input {
-    font-family: Verdana;
     font-size: 12pt;
     width: 100%;
 }
 
 #spacer {
     height: 10px;
+}
+
+#header {
+    width: 100%;
+    background-color: #eeeeee;
+    display: flex;
+    display: -webkit-flex;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    -webkit-align-items: center;
+    align-items:         center;
+}
+
+#workArea {
+    margin: 20px;
+}
+
+#logo {
+    font-size: 20pt;
+}
+
+#stats {
+
 }

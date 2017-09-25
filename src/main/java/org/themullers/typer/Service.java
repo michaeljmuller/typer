@@ -8,8 +8,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.themullers.typer.textsource.Book;
 
@@ -56,9 +56,11 @@ public class Service {
     }
     
     @RequestMapping("/s/lineComplete")
-    LineCompleteResponse lineComplete(@RequestParam(value="lineNum") int lineNum) {
-        dao.updatePosition(lineNum);
-        return new LineCompleteResponse();
+    LineCompleteResponse lineComplete(@RequestBody LineTypedInfo info) {
+        dao.updatePosition(info.getNowAtLine());
+        LineCompleteResponse response = new LineCompleteResponse();
+        populateText(response, info.getRequestedLineNumStart(), info.getNumLinesRequested());
+        return response;
     }
     
     protected void populateText(TextData td, int start, int numLines) {
